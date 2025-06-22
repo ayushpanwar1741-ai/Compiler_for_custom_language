@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Language Grammar Rules</title>
+    <!-- Google Fonts for a modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+            color: #22223b;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(90deg, #4f8cff 0%, #6dd5ed 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 12px rgba(79,140,255,0.12);
+            position: relative;
+        }
+        .header-image {
+            width: 100%;
+            max-height: 260px;
+            object-fit: cover;
+            border-radius: 0 0 2.5rem 2.5rem;
+            box-shadow: 0 8px 30px rgba(79,140,255,0.15);
+        }
+        .header-content {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+        .header-content h1 {
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 0.3em 0 0.2em 0;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .header-content p {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 1em;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.10);
+        }
+        main {
+            max-width: 950px;
+            margin: 3.5rem auto 2rem auto;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(79,140,255,0.10);
+            padding: 2.5rem 2.7rem 2.5rem 2.7rem;
+            position: relative;
+            z-index: 3;
+        }
+        h2, h3 {
+            font-family: 'Montserrat', Arial, sans-serif;
+            color: #274690;
+            margin-top: 2.2rem;
+            margin-bottom: 0.8rem;
+        }
+        h2 {
+            border-bottom: 2px solid #dbeafe;
+            padding-bottom: 0.3rem;
+        }
+        code, pre {
+            background: #f1f5f9;
+            color: #3b4252;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        pre {
+            display: block;
+            padding: 1em;
+            overflow-x: auto;
+            margin: 1em 0;
+            font-size: 1.07em;
+            border-left: 5px solid #4f8cff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+            background: #f8fafc;
+            border-radius: 1em;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(79,140,255,0.05);
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 0.8em;
+            text-align: left;
+        }
+        th {
+            background: #e0e7ff;
+        }
+        ul {
+            margin-left: 1.5em;
+        }
+        .token-list {
+            columns: 2;
+            -webkit-columns: 2;
+            -moz-columns: 2;
+            margin-bottom: 1em;
+        }
+        .icon {
+            width: 32px;
+            height: 32px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .section-img {
+            display: block;
+            margin: 0 auto 1.2em auto;
+            max-width: 170px;
+            border-radius: 1em;
+            box-shadow: 0 2px 14px rgba(79,140,255,0.10);
+        }
+        .note-box {
+            background: #e0f2fe;
+            border-left: 5px solid #4f8cff;
+            padding: 1em 1.5em;
+            border-radius: 0.7em;
+            margin: 1.2em 0;
+            color: #1e293b;
+            font-size: 1.09em;
+        }
+        /* Responsive */
+        @media (max-width: 700px) {
+            main { padding: 1.1rem; }
+            table, th, td { font-size: 0.98em; }
+            .token-list { columns: 1; }
+            .header-content h1 { font-size: 2.0rem; }
+            .header-content p { font-size: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="header-image" src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80" alt="Abstract code background">
+        <div class="header-content">
+            <h1>
+                <svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path>
+                </svg>
+                Custom Language Grammar Rules
+            </h1>
+            <p>
+                A beautiful summary of the syntax and structure of your custom programming language.
+            </p>
+        </div>
+    </header>
+    <main>
+        <img class="section-img" src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Programming tokens illustration">
+        <h2>Token Types</h2>
+        <ul class="token-list">
+            <li><strong>Keywords:</strong> <code>var</code>, <code>print</code>, <code>if</code>, <code>else</code>, <code>return</code></li>
+            <li><strong>Identifiers:</strong> Variable names (e.g., <code>x</code>, <code>foo</code>)</li>
+            <li><strong>Literals:</strong> Numbers (e.g., <code>42</code>), Strings (e.g., <code>"hello"</code>)</li>
+            <li><strong>Operators:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code></li>
+            <li><strong>Comparisons:</strong> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></li>
+            <li><strong>Assignment:</strong> <code>=</code></li>
+            <li><strong>Delimiters:</strong> <code>(</code>, <code>)</code>, <code>{</code>, <code>}</code>, <code>;</code></li>
+        </ul>
+
+        <img class="section-img" src="https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80" alt="Grammar rules illustration">
+        <h2>Grammar Rules (EBNF)</h2>
+        <pre><code>program         ::= { statement }
+statement       ::= declaration | print_stmt | if_stmt | return_stmt
+declaration     ::= 'var' identifier [ '=' expression ] ';'
+print_stmt      ::= 'print' expression ';'
+return_stmt     ::= 'return' expression ';'
+if_stmt         ::= 'if' '(' expression ')' '{' block '}' [ 'else' '{' block '}' ]
+block           ::= { statement }
+expression      ::= primary { (op | compare) expression }
+primary         ::= identifier | number | '(' expression ')'
+        </code></pre>
+
+        <img class="section-img" src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80" alt="Statement types illustration">
+        <h2>Statement Types</h2>
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Syntax Example</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>Variable Declaration</td>
+                <td><code>var x = 5;</code></td>
+                <td>Declares a variable, optionally with initialization</td>
+            </tr>
+            <tr>
+                <td>Print Statement</td>
+                <td><code>print x + 1;</code></td>
+                <td>Prints the result of an expression</td>
+            </tr>
+            <tr>
+                <td>Return Statement</td>
+                <td><code>return x;</code></td>
+                <td>Returns the value of an expression</td>
+            </tr>
+            <tr>
+                <td>If/Else Statement</td>
+                <td><code>if (x &gt; 0) { ... } else { ... }</code></td>
+                <td>Conditional branching</td>
+            </tr>
+            <tr>
+                <td>Block</td>
+                <td><code>{ ... }</code></td>
+                <td>Groups statements together</td>
+            </tr>
+            <tr>
+                <td>Expression</td>
+                <td><code>x + y * 2</code></td>
+                <td>Arithmetic and comparison</td>
+            </tr>
+        </table>
+
+        <img class="section-img" src="https://images.unsplash.com/photo-1461344577544-4e5dc9487184?auto=format&fit=crop&w=400&q=80" alt="Operator precedence illustration">
+        <h2>Operator Precedence</h2>
+        <ul>
+            <li><strong>Highest:</strong> <code>*</code>, <code>/</code></li>
+            <li><strong>Medium:</strong> <code>+</code>, <code>-</code></li>
+            <li><strong>Lowest:</strong> Comparisons (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>)</li>
+        </ul>
+
+        <img class="section-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Sample program illustration">
+        <h2>Sample Program</h2>
+        <pre><code>var x = 10;
+var y;
+print x + 5;
+if (x &gt; 0) {
+    print x;
+} else {
+    print 0;
+}
+return x * 2;
+        </code></pre>
+
+        <div class="note-box">
+            <h3>Notes</h3>
+            <ul>
+                <li>All statements end with a semicolon <code>;</code>.</li>
+                <li>Blocks are enclosed in curly braces <code>{ ... }</code>.</li>
+                <li>Expressions can use parentheses for grouping.</li>
+                <li>Error handling is built-in for missing semicolons, unmatched braces, and invalid tokens.</li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

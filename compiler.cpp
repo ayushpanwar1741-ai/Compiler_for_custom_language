@@ -8,6 +8,7 @@
 #include <cstring>
 #include <set>
 #include <sstream>
+using namespace std;
 
 // Token types
 enum class TokenType {
@@ -21,42 +22,42 @@ enum class TokenType {
 // Token structure
 struct Token {
     TokenType type;
-    std::string value;
+    string value;
     int line;
     int column;
 
-    Token(TokenType t, const std::string& v, int l, int c)
+    Token(TokenType t, const string& v, int l, int c)
         : type(t), value(v), line(l), column(c) {}
 };
 
 // AST Node structure
 struct ASTNode {
-    std::string nodeType;
-    std::vector<std::unique_ptr<ASTNode>> children;
-    std::string value;
+    string nodeType;
+    vector<unique_ptr<ASTNode>> children;
+    string value;
     int indentLevel = 0;
 
-    ASTNode(std::string type, std::string val = "")
-        : nodeType(std::move(type)), value(std::move(val)) {}
+    ASTNode(string type, string val = "")
+        : nodeType(move(type)), value(move(val)) {}
 
-    void addChild(std::unique_ptr<ASTNode> child) {
+    void addChild(unique_ptr<ASTNode> child) {
         child->indentLevel = indentLevel + 1;
-        children.push_back(std::move(child));
+        children.push_back(move(child));
     }
 };
 
 // Optimization techniques used
 struct OptimizationResult {
-    std::set<std::string> techniques;
+    set<string> techniques;
 };
 
 // Forward declaration
-OptimizationResult optimizeAST(ASTNode* node, std::map<std::string, std::string>& consts);
+OptimizationResult optimizeAST(ASTNode* node, map<string, string>& consts);
 
 // Helper: Print AST as code
-void printASTAsCode(const ASTNode* node, std::ostream& out, int indent = 0) {
+void printASTAsCode(const ASTNode* node, ostream& out, int indent = 0) {
     if (!node) return;
-    std::string ind(indent, ' ');
+    string ind(indent, ' ');
     if (node->nodeType == "Declaration") {
         out << ind << "var " << node->value;
         if (!node->children.empty()) {
@@ -98,9 +99,9 @@ void printASTAsCode(const ASTNode* node, std::ostream& out, int indent = 0) {
 }
 
 // Helper to deep copy an ASTNode
-std::unique_ptr<ASTNode> cloneAST(const ASTNode* src) {
+unique_ptr<ASTNode> cloneAST(const ASTNode* src) {
     if (!src) return nullptr;
-    auto node = std::make_unique<ASTNode>(src->nodeType, src->value);
+    auto node = make_unique<ASTNode>(src->nodeType, src->value);
     node->indentLevel = src->indentLevel;
     for (const auto& child : src->children) {
         node->addChild(cloneAST(child.get()));
@@ -109,7 +110,7 @@ std::unique_ptr<ASTNode> cloneAST(const ASTNode* src) {
 }
 
 // Optimization: Constant folding, propagation, copy propagation, algebraic simplification
-OptimizationResult optimizeAST(ASTNode* node, std::map<std::string, std::string>& consts) {
+OptimizationResult optimizeAST(ASTNode* node, map<string, string>& consts) {
     OptimizationResult result;
     if (!node) return result;
     if (node->nodeType == "Declaration") {
@@ -140,8 +141,8 @@ OptimizationResult optimizeAST(ASTNode* node, std::map<std::string, std::string>
         }
         // Constant folding
         if (node->children[0]->nodeType == "NumberLiteral" && node->children[1]->nodeType == "NumberLiteral") {
-            int l = std::stoi(node->children[0]->value);
-            int r = std::stoi(node->children[1]->value);
+            int l = stoi(node->children[0]->value);
+            int r = stoi(node->children[1]->value);
             bool folded = true;
             int v = 0;
             if (node->value == "+") v = l + r;
@@ -157,7 +158,7 @@ OptimizationResult optimizeAST(ASTNode* node, std::map<std::string, std::string>
             else folded = false;
             if (folded) {
                 node->nodeType = "NumberLiteral";
-                node->value = std::to_string(v);
+                node->value = to_string(v);
                 node->children.clear();
                 result.techniques.insert("Constant Folding");
             }
@@ -184,36 +185,36 @@ OptimizationResult optimizeAST(ASTNode* node, std::map<std::string, std::string>
 // Compiler class
 class MiniCompiler {
 private:
-    std::vector<Token> tokens;
+    vector<Token> tokens;
     size_t currentTokenIndex = 0;
-    std::map<std::string, std::string> symbolTable;
-    std::vector<std::string> errors;
-    std::vector<std::string> intermediateCode;
-    std::vector<std::string> assemblyCode;
+    map<string, string> symbolTable;
+    vector<string> errors;
+    vector<string> intermediateCode;
+    vector<string> assemblyCode;
 
     // Helper functions
-    void addError(const std::string& error) { errors.push_back(error); }
-    void addToken(TokenType type, const std::string& value, int line, int column) { tokens.emplace_back(type, value, line, column); }
-    void addIntermediateCode(const std::string& code) { intermediateCode.push_back(code); }
-    void addAssemblyCode(const std::string& code) { assemblyCode.push_back(code); }
-    void addSymbol(const std::string& key, const std::string& value) { symbolTable[key] = value; }
-    bool symbolExists(const std::string& key) const { return symbolTable.find(key) != symbolTable.end(); }
+    void addError(const string& error) { errors.push_back(error); }
+    void addToken(TokenType type, const string& value, int line, int column) { tokens.emplace_back(type, value, line, column); }
+    void addIntermediateCode(const string& code) { intermediateCode.push_back(code); }
+    void addAssemblyCode(const string& code) { assemblyCode.push_back(code); }
+    void addSymbol(const string& key, const string& value) { symbolTable[key] = value; }
+    bool symbolExists(const string& key) const { return symbolTable.find(key) != symbolTable.end(); }
 
     // Tokenizer
-    void tokenize(const std::string& source);
+    void tokenize(const string& source);
 
     // Parser
     const Token& currentToken() const;
     void advance();
-    int getPrecedence(const std::string& op) const;
-    std::unique_ptr<ASTNode> parseExpression(int minPrec);
-    std::unique_ptr<ASTNode> parsePrimary();
-    std::unique_ptr<ASTNode> parseDeclaration();
-    std::unique_ptr<ASTNode> parsePrint();
-    std::unique_ptr<ASTNode> parseReturn();
-    std::unique_ptr<ASTNode> parseIfElse();
-    std::unique_ptr<ASTNode> parseProgramBlock();
-    std::unique_ptr<ASTNode> parseProgram();
+    int getPrecedence(const string& op) const;
+    unique_ptr<ASTNode> parseExpression(int minPrec);
+    unique_ptr<ASTNode> parsePrimary();
+    unique_ptr<ASTNode> parseDeclaration();
+    unique_ptr<ASTNode> parsePrint();
+    unique_ptr<ASTNode> parseReturn();
+    unique_ptr<ASTNode> parseIfElse();
+    unique_ptr<ASTNode> parseProgramBlock();
+    unique_ptr<ASTNode> parseProgram();
 
     // Semantic Analysis
     void semanticAnalysis(ASTNode* node);
@@ -228,29 +229,29 @@ private:
     void printTokens() const;
     void printErrors() const;
     void printAST(const ASTNode* node) const;
-    void printASTJSON(const ASTNode* node, std::ostream& out, int indent) const;
+    void printASTJSON(const ASTNode* node, ostream& out, int indent) const;
 
 public:
-    std::unique_ptr<ASTNode> ast;
-    void compile(const std::string& filename);
+    unique_ptr<ASTNode> ast;
+    void compile(const string& filename);
     bool hasErrors() const { return !errors.empty(); }
 };
 
 // Implementation
 
-void MiniCompiler::compile(const std::string& filename) {
-    std::ifstream file(filename);
+void MiniCompiler::compile(const string& filename) {
+    ifstream file(filename);
     if (!file) {
-        std::cerr << "Error: Could not open file '" << filename << "'" << std::endl;
+        cerr << "Error: Could not open file '" << filename << "'" << endl;
         return;
     }
 
-    std::string sourceCode((std::istreambuf_iterator<char>(file)),
-                           std::istreambuf_iterator<char>());
+    string sourceCode((istreambuf_iterator<char>(file)),
+                       istreambuf_iterator<char>());
     file.close();
 
-    std::cout << "=== Source Code ===" << std::endl;
-    std::cout << sourceCode << std::endl << std::endl;
+    cout << "=== Source Code ===" << endl;
+    cout << sourceCode << endl << endl;
 
     tokens.clear();
     currentTokenIndex = 0;
@@ -260,7 +261,7 @@ void MiniCompiler::compile(const std::string& filename) {
     assemblyCode.clear();
     ast.reset();
 
-    std::cout << "=== Lexical Analysis (Tokenization) ===" << std::endl;
+    cout << "=== Lexical Analysis (Tokenization) ===" << endl;
     tokenize(sourceCode);
     printTokens();
 
@@ -269,7 +270,7 @@ void MiniCompiler::compile(const std::string& filename) {
         return;
     }
 
-    std::cout << "\n=== Syntax Analysis (Parsing) ===" << std::endl;
+    cout << "\n=== Syntax Analysis (Parsing) ===" << endl;
     ast = parseProgram();
 
     if (!errors.empty()) {
@@ -277,14 +278,14 @@ void MiniCompiler::compile(const std::string& filename) {
         return;
     }
 
-    std::cout << "\nParse Tree:" << std::endl;
+    cout << "\nParse Tree:" << endl;
     if (ast) printAST(ast.get());
 
-    std::cout << "\nParse Tree (JSON):" << std::endl;
-    if (ast) printASTJSON(ast.get(), std::cout, 0);
-    std::cout << std::endl;
+    cout << "\nParse Tree (JSON):" << endl;
+    if (ast) printASTJSON(ast.get(), cout, 0);
+    cout << endl;
 
-    std::cout << "\n=== Semantic Analysis ===" << std::endl;
+    cout << "\n=== Semantic Analysis ===" << endl;
     semanticAnalysis(ast.get());
 
     if (!errors.empty()) {
@@ -292,40 +293,40 @@ void MiniCompiler::compile(const std::string& filename) {
         return;
     }
 
-    std::cout << "\nSymbol Table:" << std::endl;
+    cout << "\nSymbol Table:" << endl;
     for (const auto& entry : symbolTable) {
-        std::cout << entry.first << ": " << entry.second << std::endl;
+        cout << entry.first << ": " << entry.second << endl;
     }
 
-    std::cout << "\n=== Intermediate Code Generation ===" << std::endl;
+    cout << "\n=== Intermediate Code Generation ===" << endl;
     int tempCount = 0;
     int labelCount = 0;
     generateIntermediateCode(ast.get(), tempCount, labelCount);
 
-    std::cout << "\nIntermediate Code (Three-Address Code):" << std::endl;
+    cout << "\nIntermediate Code (Three-Address Code):" << endl;
     for (size_t i = 0; i < intermediateCode.size(); i++) {
-        std::cout << i << ": " << intermediateCode[i] << std::endl;
+        cout << i << ": " << intermediateCode[i] << endl;
     }
 
-    std::cout << "\n=== Assembly Code Generation ===" << std::endl;
+    cout << "\n=== Assembly Code Generation ===" << endl;
     int regCount = 0;
     generateAssembly(ast.get(), regCount);
 
     for (const auto& code : assemblyCode) {
-        std::cout << code << std::endl;
+        cout << code << endl;
     }
 
-    std::cout << "\nCompilation successful!" << std::endl;
+    cout << "\nCompilation successful!" << endl;
 }
 
-void MiniCompiler::tokenize(const std::string& source) {
+void MiniCompiler::tokenize(const string& source) {
     size_t pos = 0;
     int line = 1;
     int lineStart = 0;
     size_t sourceLen = source.length();
 
     while (pos < sourceLen) {
-        while (pos < sourceLen && std::isspace(source[pos])) {
+        while (pos < sourceLen && isspace(source[pos])) {
             if (source[pos] == '\n') {
                 line++;
                 lineStart = pos + 1;
@@ -336,10 +337,10 @@ void MiniCompiler::tokenize(const std::string& source) {
 
         int tokenStart = pos;
         TokenType type = TokenType::END;
-        std::string value;
+        string value;
 
-        if (std::isalpha(source[pos]) || source[pos] == '_') {
-            while (pos < sourceLen && (std::isalnum(source[pos]) || source[pos] == '_')) {
+        if (isalpha(source[pos]) || source[pos] == '_') {
+            while (pos < sourceLen && (isalnum(source[pos]) || source[pos] == '_')) {
                 pos++;
             }
             value = source.substr(tokenStart, pos - tokenStart);
@@ -351,8 +352,8 @@ void MiniCompiler::tokenize(const std::string& source) {
             else if (value == "return") type = TokenType::RETURN;
             else type = TokenType::ID;
         }
-        else if (std::isdigit(source[pos])) {
-            while (pos < sourceLen && std::isdigit(source[pos])) {
+        else if (isdigit(source[pos])) {
+            while (pos < sourceLen && isdigit(source[pos])) {
                 pos++;
             }
             value = source.substr(tokenStart, pos - tokenStart);
@@ -372,12 +373,12 @@ void MiniCompiler::tokenize(const std::string& source) {
             type = TokenType::STRING;
             pos++;
         }
-        else if (std::strchr("+-*/", source[pos])) {
+        else if (strchr("+-*/", source[pos])) {
             value = source.substr(pos, 1);
             pos++;
             type = TokenType::OP;
         }
-        else if (std::strchr("=!<>", source[pos])) {
+        else if (strchr("=!<>", source[pos])) {
             if (pos + 1 < sourceLen && source[pos+1] == '=') {
                 value = source.substr(pos, 2);
                 pos += 2;
@@ -397,12 +398,12 @@ void MiniCompiler::tokenize(const std::string& source) {
                 case '}': type = TokenType::RBRACE; value = source.substr(pos, 1); pos++; break;
                 case ';': type = TokenType::SEMI; value = source.substr(pos, 1); pos++; break;
                 default: {
-                    std::string error = "Illegal character '\\x";
+                    string error = "Illegal character '\\x";
                     char buf[3];
                     snprintf(buf, sizeof(buf), "%02x", (unsigned char)source[pos]);
                     error += buf;
-                    error += "' at line " + std::to_string(line) +
-                             ", column " + std::to_string(pos - lineStart);
+                    error += "' at line " + to_string(line) +
+                             ", column " + to_string(pos - lineStart);
                     addError(error);
                     pos++;
                     continue;
@@ -428,7 +429,7 @@ void MiniCompiler::advance() {
     }
 }
 
-int MiniCompiler::getPrecedence(const std::string& op) const {
+int MiniCompiler::getPrecedence(const string& op) const {
     if (op.empty()) return -1;
     if (op == "+" || op == "-") return 1;
     if (op == "*" || op == "/") return 2;
@@ -436,16 +437,16 @@ int MiniCompiler::getPrecedence(const std::string& op) const {
     return -1;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parsePrimary() {
+unique_ptr<ASTNode> MiniCompiler::parsePrimary() {
     const Token& token = currentToken();
-    std::unique_ptr<ASTNode> node;
+    unique_ptr<ASTNode> node;
 
     if (token.type == TokenType::ID) {
-        node = std::make_unique<ASTNode>("Identifier", token.value);
+        node = make_unique<ASTNode>("Identifier", token.value);
         advance();
     }
     else if (token.type == TokenType::NUMBER) {
-        node = std::make_unique<ASTNode>("NumberLiteral", token.value);
+        node = make_unique<ASTNode>("NumberLiteral", token.value);
         advance();
     }
     else if (token.type == TokenType::LPAREN) {
@@ -465,7 +466,7 @@ std::unique_ptr<ASTNode> MiniCompiler::parsePrimary() {
     return node;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parseExpression(int minPrec) {
+unique_ptr<ASTNode> MiniCompiler::parseExpression(int minPrec) {
     auto left = parsePrimary();
     if (!left) return nullptr;
 
@@ -473,7 +474,7 @@ std::unique_ptr<ASTNode> MiniCompiler::parseExpression(int minPrec) {
         const Token& token = currentToken();
         if (token.type != TokenType::OP && token.type != TokenType::COMPARE) break;
 
-        std::string op = token.value;
+        string op = token.value;
         int prec = getPrecedence(op);
         if (prec < minPrec) break;
 
@@ -481,24 +482,24 @@ std::unique_ptr<ASTNode> MiniCompiler::parseExpression(int minPrec) {
         auto right = parseExpression(prec + 1);
         if (!right) return nullptr;
 
-        auto bin = std::make_unique<ASTNode>("BinaryExpr", op);
-        bin->addChild(std::move(left));
-        bin->addChild(std::move(right));
-        left = std::move(bin);
+        auto bin = make_unique<ASTNode>("BinaryExpr", op);
+        bin->addChild(move(left));
+        bin->addChild(move(right));
+        left = move(bin);
     }
     return left;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parseDeclaration() {
+unique_ptr<ASTNode> MiniCompiler::parseDeclaration() {
     advance(); // skip 'var'
     if (currentToken().type != TokenType::ID) {
         addError("Expected identifier after 'var'");
         return nullptr;
     }
 
-    std::string varName = currentToken().value;
+    string varName = currentToken().value;
     advance();
-    std::unique_ptr<ASTNode> expr;
+    unique_ptr<ASTNode> expr;
 
     if (currentToken().type == TokenType::ASSIGN) {
         advance();
@@ -515,12 +516,12 @@ std::unique_ptr<ASTNode> MiniCompiler::parseDeclaration() {
     }
     advance();
 
-    auto decl = std::make_unique<ASTNode>("Declaration", varName);
-    if (expr) decl->addChild(std::move(expr));
+    auto decl = make_unique<ASTNode>("Declaration", varName);
+    if (expr) decl->addChild(move(expr));
     return decl;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parsePrint() {
+unique_ptr<ASTNode> MiniCompiler::parsePrint() {
     advance();
     auto expr = parseExpression(0);
     if (!expr) {
@@ -534,12 +535,12 @@ std::unique_ptr<ASTNode> MiniCompiler::parsePrint() {
     }
     advance();
 
-    auto node = std::make_unique<ASTNode>("Print");
-    node->addChild(std::move(expr));
+    auto node = make_unique<ASTNode>("Print");
+    node->addChild(move(expr));
     return node;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parseReturn() {
+unique_ptr<ASTNode> MiniCompiler::parseReturn() {
     advance();
     auto expr = parseExpression(0);
     if (!expr) {
@@ -552,12 +553,12 @@ std::unique_ptr<ASTNode> MiniCompiler::parseReturn() {
     }
     advance();
 
-    auto node = std::make_unique<ASTNode>("Return");
-    node->addChild(std::move(expr));
+    auto node = make_unique<ASTNode>("Return");
+    node->addChild(move(expr));
     return node;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parseIfElse() {
+unique_ptr<ASTNode> MiniCompiler::parseIfElse() {
     advance();
     if (currentToken().type != TokenType::LPAREN) {
         addError("Expected '(' after 'if'");
@@ -596,34 +597,34 @@ std::unique_ptr<ASTNode> MiniCompiler::parseIfElse() {
         auto elseBlock = parseProgramBlock();
         if (!elseBlock) return nullptr;
 
-        auto ifNode = std::make_unique<ASTNode>("IfElse");
-        ifNode->addChild(std::move(cond));
-        ifNode->addChild(std::move(ifBlock));
-        ifNode->addChild(std::move(elseBlock));
+        auto ifNode = make_unique<ASTNode>("IfElse");
+        ifNode->addChild(move(cond));
+        ifNode->addChild(move(ifBlock));
+        ifNode->addChild(move(elseBlock));
         return ifNode;
     } else {
-        auto ifNode = std::make_unique<ASTNode>("If");
-        ifNode->addChild(std::move(cond));
-        ifNode->addChild(std::move(ifBlock));
+        auto ifNode = make_unique<ASTNode>("If");
+        ifNode->addChild(move(cond));
+        ifNode->addChild(move(ifBlock));
         return ifNode;
     }
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parseProgramBlock() {
-    auto block = std::make_unique<ASTNode>("Block");
+unique_ptr<ASTNode> MiniCompiler::parseProgramBlock() {
+    auto block = make_unique<ASTNode>("Block");
     while (currentToken().type != TokenType::RBRACE && currentToken().type != TokenType::END) {
         switch (currentToken().type) {
             case TokenType::VAR:
-                if (auto decl = parseDeclaration()) block->addChild(std::move(decl));
+                if (auto decl = parseDeclaration()) block->addChild(move(decl));
                 break;
             case TokenType::PRINT:
-                if (auto prt = parsePrint()) block->addChild(std::move(prt));
+                if (auto prt = parsePrint()) block->addChild(move(prt));
                 break;
             case TokenType::IF:
-                if (auto ifstmt = parseIfElse()) block->addChild(std::move(ifstmt));
+                if (auto ifstmt = parseIfElse()) block->addChild(move(ifstmt));
                 break;
             case TokenType::RETURN:
-                if (auto ret = parseReturn()) block->addChild(std::move(ret));
+                if (auto ret = parseReturn()) block->addChild(move(ret));
                 break;
             default:
                 addError("Unexpected token in block");
@@ -635,21 +636,21 @@ std::unique_ptr<ASTNode> MiniCompiler::parseProgramBlock() {
     return block;
 }
 
-std::unique_ptr<ASTNode> MiniCompiler::parseProgram() {
-    auto program = std::make_unique<ASTNode>("Program");
+unique_ptr<ASTNode> MiniCompiler::parseProgram() {
+    auto program = make_unique<ASTNode>("Program");
     while (currentToken().type != TokenType::END) {
         switch (currentToken().type) {
             case TokenType::VAR:
-                if (auto decl = parseDeclaration()) program->addChild(std::move(decl));
+                if (auto decl = parseDeclaration()) program->addChild(move(decl));
                 break;
             case TokenType::PRINT:
-                if (auto prt = parsePrint()) program->addChild(std::move(prt));
+                if (auto prt = parsePrint()) program->addChild(move(prt));
                 break;
             case TokenType::IF:
-                if (auto ifstmt = parseIfElse()) program->addChild(std::move(ifstmt));
+                if (auto ifstmt = parseIfElse()) program->addChild(move(ifstmt));
                 break;
             case TokenType::RETURN:
-                if (auto ret = parseReturn()) program->addChild(std::move(ret));
+                if (auto ret = parseReturn()) program->addChild(move(ret));
                 break;
             default:
                 addError("Unexpected token in program");
@@ -721,10 +722,10 @@ void MiniCompiler::generateIntermediateCode(ASTNode* node, int& tempCount, int& 
     else if (node->nodeType == "BinaryExpr") {
         generateIntermediateCode(node->children[0].get(), tempCount, labelCount);
         generateIntermediateCode(node->children[1].get(), tempCount, labelCount);
-        std::string leftVal = node->children[0]->value;
-        std::string rightVal = node->children[1]->value;
-        std::string op = node->value;
-        std::string resultTemp = "t" + std::to_string(tempCount++);
+        string leftVal = node->children[0]->value;
+        string rightVal = node->children[1]->value;
+        string op = node->value;
+        string resultTemp = "t" + to_string(tempCount++);
         addIntermediateCode(resultTemp + " = " + leftVal + " " + op + " " + rightVal);
     }
     else if (node->nodeType == "Print") {
@@ -737,15 +738,15 @@ void MiniCompiler::generateIntermediateCode(ASTNode* node, int& tempCount, int& 
     }
     else if (node->nodeType == "If") {
         generateIntermediateCode(node->children[0].get(), tempCount, labelCount);
-        std::string labelEnd = "L" + std::to_string(labelCount++);
+        string labelEnd = "L" + to_string(labelCount++);
         addIntermediateCode("ifFalse " + node->children[0]->value + " goto " + labelEnd);
         generateIntermediateCode(node->children[1].get(), tempCount, labelCount);
         addIntermediateCode(labelEnd + ":");
     }
     else if (node->nodeType == "IfElse") {
         generateIntermediateCode(node->children[0].get(), tempCount, labelCount);
-        std::string labelElse = "L" + std::to_string(labelCount++);
-        std::string labelEnd = "L" + std::to_string(labelCount++);
+        string labelElse = "L" + to_string(labelCount++);
+        string labelEnd = "L" + to_string(labelCount++);
         addIntermediateCode("ifFalse " + node->children[0]->value + " goto " + labelElse);
         generateIntermediateCode(node->children[1].get(), tempCount, labelCount);
         addIntermediateCode("goto " + labelEnd);
@@ -846,7 +847,7 @@ void MiniCompiler::generateAssembly(ASTNode* node, int& regCount) {
     }
     else if (node->nodeType == "If") {
         generateAssembly(node->children[0].get(), regCount);
-        std::string labelEnd = "L" + std::to_string(regCount++);
+        string labelEnd = "L" + to_string(regCount++);
         addAssemblyCode("cmp eax, 0");
         addAssemblyCode("je " + labelEnd);
         generateAssembly(node->children[1].get(), regCount);
@@ -854,8 +855,8 @@ void MiniCompiler::generateAssembly(ASTNode* node, int& regCount) {
     }
     else if (node->nodeType == "IfElse") {
         generateAssembly(node->children[0].get(), regCount);
-        std::string labelElse = "L" + std::to_string(regCount++);
-        std::string labelEnd = "L" + std::to_string(regCount++);
+        string labelElse = "L" + to_string(regCount++);
+        string labelEnd = "L" + to_string(regCount++);
         addAssemblyCode("cmp eax, 0");
         addAssemblyCode("je " + labelElse);
         generateAssembly(node->children[1].get(), regCount);
@@ -868,87 +869,87 @@ void MiniCompiler::generateAssembly(ASTNode* node, int& regCount) {
 
 void MiniCompiler::printTokens() const {
     for (const auto& token : tokens) {
-        std::cout << "Line " << token.line << ", Column " << token.column << ": ";
+        cout << "Line " << token.line << ", Column " << token.column << ": ";
         switch (token.type) {
-            case TokenType::VAR: std::cout << "VAR"; break;
-            case TokenType::PRINT: std::cout << "PRINT"; break;
-            case TokenType::IF: std::cout << "IF"; break;
-            case TokenType::ELSE: std::cout << "ELSE"; break;
-            case TokenType::RETURN: std::cout << "RETURN"; break;
-            case TokenType::ID: std::cout << "ID"; break;
-            case TokenType::NUMBER: std::cout << "NUMBER"; break;
-            case TokenType::STRING: std::cout << "STRING"; break;
-            case TokenType::OP: std::cout << "OP"; break;
-            case TokenType::COMPARE: std::cout << "COMPARE"; break;
-            case TokenType::ASSIGN: std::cout << "ASSIGN"; break;
-            case TokenType::LPAREN: std::cout << "LPAREN"; break;
-            case TokenType::RPAREN: std::cout << "RPAREN"; break;
-            case TokenType::LBRACE: std::cout << "LBRACE"; break;
-            case TokenType::RBRACE: std::cout << "RBRACE"; break;
-            case TokenType::SEMI: std::cout << "SEMI"; break;
-            case TokenType::END: std::cout << "END"; break;
+            case TokenType::VAR: cout << "VAR"; break;
+            case TokenType::PRINT: cout << "PRINT"; break;
+            case TokenType::IF: cout << "IF"; break;
+            case TokenType::ELSE: cout << "ELSE"; break;
+            case TokenType::RETURN: cout << "RETURN"; break;
+            case TokenType::ID: cout << "ID"; break;
+            case TokenType::NUMBER: cout << "NUMBER"; break;
+            case TokenType::STRING: cout << "STRING"; break;
+            case TokenType::OP: cout << "OP"; break;
+            case TokenType::COMPARE: cout << "COMPARE"; break;
+            case TokenType::ASSIGN: cout << "ASSIGN"; break;
+            case TokenType::LPAREN: cout << "LPAREN"; break;
+            case TokenType::RPAREN: cout << "RPAREN"; break;
+            case TokenType::LBRACE: cout << "LBRACE"; break;
+            case TokenType::RBRACE: cout << "RBRACE"; break;
+            case TokenType::SEMI: cout << "SEMI"; break;
+            case TokenType::END: cout << "END"; break;
         }
-        std::cout << " = " << token.value << std::endl;
+        cout << " = " << token.value << endl;
     }
 }
 
 void MiniCompiler::printErrors() const {
-    std::cout << "\nCompilation errors:" << std::endl;
+    cout << "\nCompilation errors:" << endl;
     for (const auto& error : errors) {
-        std::cout << error << std::endl;
+        cout << error << endl;
     }
 }
 
 void MiniCompiler::printAST(const ASTNode* node) const {
     if (!node) return;
-    std::cout << std::string(node->indentLevel * 2, ' ') << node->nodeType;
-    if (!node->value.empty()) std::cout << " (" << node->value << ")";
-    std::cout << std::endl;
+    cout << string(node->indentLevel * 2, ' ') << node->nodeType;
+    if (!node->value.empty()) cout << " (" << node->value << ")";
+    cout << endl;
     for (const auto& child : node->children) {
         printAST(child.get());
     }
 }
 
-void MiniCompiler::printASTJSON(const ASTNode* node, std::ostream& out, int indent) const {
+void MiniCompiler::printASTJSON(const ASTNode* node, ostream& out, int indent) const {
     if (!node) return;
-    out << std::string(indent, ' ') << "{\n";
-    out << std::string(indent + 2, ' ') << "\"type\": \"" << node->nodeType << "\"";
+    out << string(indent, ' ') << "{\n";
+    out << string(indent + 2, ' ') << "\"type\": \"" << node->nodeType << "\"";
     if (!node->value.empty()) {
-        out << ",\n" << std::string(indent + 2, ' ') << "\"value\": \"" << node->value << "\"";
+        out << ",\n" << string(indent + 2, ' ') << "\"value\": \"" << node->value << "\"";
     }
     if (!node->children.empty()) {
-        out << ",\n" << std::string(indent + 2, ' ') << "\"children\": [\n";
+        out << ",\n" << string(indent + 2, ' ') << "\"children\": [\n";
         for (size_t i = 0; i < node->children.size(); i++) {
             printASTJSON(node->children[i].get(), out, indent + 4);
             if (i + 1 < node->children.size()) out << ",\n";
         }
-        out << "\n" << std::string(indent + 2, ' ') << "]";
+        out << "\n" << string(indent + 2, ' ') << "]";
     }
-    out << "\n" << std::string(indent, ' ') << "}";
+    out << "\n" << string(indent, ' ') << "}";
 }
 
 // Main function
 int main(int argc, char* argv[]) {
     bool doOptimize = false;
-    std::string filename;
+    string filename;
     for (int i = 1; i < argc; ++i) {
-        if (std::string(argv[i]) == "--optimize") doOptimize = true;
+        if (string(argv[i]) == "--optimize") doOptimize = true;
         else filename = argv[i];
     }
     if (filename.empty()) {
-        std::cerr << "Usage: " << argv[0] << " <filename.mini> [--optimize]" << std::endl;
+        cerr << "Usage: " << argv[0] << " <filename.mini> [--optimize]" << endl;
         return 1;
     }
     MiniCompiler compiler;
     compiler.compile(filename);
     if (doOptimize && compiler.ast) {
-        std::map<std::string, std::string> consts;
+        map<string, string> consts;
         auto res = optimizeAST(compiler.ast.get(), consts);
-        std::ostringstream oss;
+        ostringstream oss;
         printASTAsCode(compiler.ast.get(), oss);
-        std::cout << "\n=== Optimized Code ===\n" << oss.str();
-        std::cout << "\n=== Optimization Techniques Used ===\n";
-        for (const auto& t : res.techniques) std::cout << t << "\n";
+        cout << "\n=== Optimized Code ===\n" << oss.str();
+        cout << "\n=== Optimization Techniques Used ===\n";
+        for (const auto& t : res.techniques) cout << t << "\n";
     }
     return compiler.hasErrors() ? 1 : 0;
 }

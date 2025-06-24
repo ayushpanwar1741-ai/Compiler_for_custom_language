@@ -59,12 +59,11 @@ Compiler/
 ```
 
 ## Screenshots
-> _Add screenshots here after running the app!_
 
 - **Main Interface:**
-  ![Main UI](templetes/screenshot1.png)
+  ![Main UI](templates/screenshot1.png)
 - **Language Rules Page:**
-  ![Rules UI](templetes/screenshot2.png)
+  ![Rules UI](templates/screenshot2.png)
 
 ## Custom Language
 - See the **Language Rules & Syntax** page in the app for grammar, tokens, and sample programs.

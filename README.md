@@ -68,9 +68,6 @@ Compiler/
 ## Custom Language
 - See the **Language Rules & Syntax** page in the app for grammar, tokens, and sample programs.
 
-## License
-MIT License
-
 ## Team Members
 
 - Ayush Panwar

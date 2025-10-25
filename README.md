@@ -67,6 +67,3 @@ Compiler/
 
 ## Custom Language
 - See the **Language Rules & Syntax** page in the app for grammar, tokens, and sample programs.
-
----
-Feel free to customize and extend this project for your own language or educational use!

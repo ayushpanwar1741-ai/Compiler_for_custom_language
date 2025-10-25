@@ -68,12 +68,5 @@ Compiler/
 ## Custom Language
 - See the **Language Rules & Syntax** page in the app for grammar, tokens, and sample programs.
 
-## Team Members
-
-- Ayush Panwar
-- Abhay Singh
-- Pankaj Rawat
-- Ankit Rawat
-
 ---
 Feel free to customize and extend this project for your own language or educational use!
